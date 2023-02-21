@@ -1,114 +1,153 @@
-var garden,rabbit,apple,orangeL,redL;
-var gardenImg,rabbitImg,carrotImg,orangeImg,redImg;
+var path,boy,cash,diamonds,jwellery,sword;
+var pathImg,boyImg,cashImg,diamondsImg,jwelleryImg,swordImg;
+var treasureCollection = 0;
+var cashG,diamondsG,jwelleryG,swordGroup;
 
+//Game States
+var PLAY=1;
+var END=0;
+var gameState=1;
 
 function preload(){
-  gardenImg = loadImage("garden.png");
-  rabbitImg = loadImage("rabbit.png");
-  appleImg = loadImage("apple.png");
-  orangeImg = loadImage("orangeLeaf.png");
-  redImg = loadImage("redImage.png");
+  pathImg = loadImage("Road.png");
+  boyImg = loadAnimation("Runner-1.png","Runner-2.png");
+  cashImg = loadImage("cash.png");
+  diamondsImg = loadImage("diamonds.png");
+  jwelleryImg = loadImage("jwell.png");
+  swordImg = loadImage("sword.png");
+  endImg =loadAnimation("gameOver.png");
 }
-
 
 function setup(){
   
-  createCanvas(400,400);
-// Moving background
-garden=createSprite(200,200);
-garden.addImage(gardenImg);
+//create the canvas and adjust the window sizes to suit the device 
+
+createCanvas(windowWidth, windowHeight);
+boy = createSprite(50,height-70,20,50);
+
+path=createSprite(width/2,200);
+path.addImage(pathImg);
+path.velocityY = 4;
 
 
 //creating boy running
-rabbit = createSprite(160,340,20,20);
-rabbit.scale =0.09;
-rabbit.addImage(rabbitImg);
+boy = createSprite(width/2,height-20,20,20);
+boy.addAnimation("SahilRunning",boyImg);
+boy.scale=0.08;
+  
+  
+cashG=new Group();
+diamondsG=new Group();
+jwelleryG=new Group();
+swordGroup=new Group();
+
 }
 
 function draw() {
+
+  if(gameState===PLAY){
   background(0);
-  
-  // boy moving on Xaxis with mouse'
-  rabbit.x = World.mouseX;
+  boy.x = World.mouseX;
   
   edges= createEdgeSprites();
-  rabbit.collide(edges);
+  boy.collide(edges);
   
-   drawSprites();
-   
+  //code to reset the background
+
+    createCash();
+    createDiamonds();
+    createJwellery();
+    createSword();
+
+    if (cashG.isTouching(boy)) {
+      cashG.destroyEach();
+      treasureCollection=treasureCollection + 50;
+    }
+    else if (diamondsG.isTouching(boy)) {
+      diamondsG.destroyEach();
+      treasureCollection=treasureCollection + 100;
+      
+    }else if(jwelleryG.isTouching(boy)) {
+      jwelleryG.destroyEach();
+      treasureCollection= treasureCollection + 150;
+      
+    }else{
+      if(swordGroup.isTouching(boy)) {
+        gameState=END;
+        
+        boy.addAnimation("SahilRunning",endImg);
+        boy.x=width/2;
+        boy.y=height/2;
+        boy.scale=0.6;
+        
+        cashG.destroyEach();
+        diamondsG.destroyEach();
+        jwelleryG.destroyEach();
+        swordGroup.destroyEach();
+        
+        cashG.setVelocityYEach(0);
+        diamondsG.setVelocityYEach(0);
+        jwelleryG.setVelocityYEach(0);
+        swordGroup.setVelocityYEach(0);
+     
+    }
+  }
   
-// var select_sprites = Math(random(1,3));
-
-// var select_sprites = Math.random(random(1,3));
-
-// var select_sprites = Math.round(1,3);
-
- var select_sprites = Math.round(random(1,3));
-
-  
-  // if (frameCount % 50 == 0) {
-  //   if (select_sprites == 1) {
-  //     createApples();
-  //   } else if (select_sprites == 2) {
-  //     createOrange();
-  //   }else {
-  //     createRed();
-  //   }
-  // }
-
-   if (frameCount % 80 == 0) {
-     if (select_sprites == 1) {
-       createApples();
-     } else if (select_sprites == 2) {
-       createOrange();
-     }
-   }
-
-  // if (frameCount / 80 == 0) {
-  //   if (select_sprites == 1) {
-  //     createApples();
-  //   } else if (select_sprites == 2) {
-  //     createOrange();
-  //   }else {
-  //     createRed();
-  //   }
-  // }
-
-  // if (frameCount % 80 = 0) {
-  //   if (select_sprites == 1) {
-  //     createApples();
-  //   } else if (select_sprites == 2) {
-  //     createOrange();
-  //   }else {
-  //     createRed();
-  //   }
-  // }
-
-
+  drawSprites();
+  textSize(20);
+  fill(255);
+  text("Treasure: "+ treasureCollection,width-150,30);
+  }
 
 }
 
-function createApples() {
-apple = createSprite(random(50, 350),40, 10, 10);
-apple.addImage(appleImg);
-apple.scale=0.07;
-apple.velocityY = 3;
-apple.lifetime = 150;
-  
+function createCash() {
+  if (World.frameCount % 200 == 0) {
+   // Modify the positions of cash 
+    var cash = createSprite(Math.round(random(50, 350),40, 10, 10));
+    cash.addImage(cashImg);
+  cash.scale=0.12;
+  cash.velocityY = 5;
+  cash.lifetime = 200;
+  cashG.add(cash);
+  }
 }
 
-function createOrange() {
-orangeL = createSprite(random(50, 350),40, 10, 10);
-orangeL.addImage(orangeImg);
-orangeL.scale=0.08;
-orangeL.velocityY = 3;
-orangeL.lifetime = 150;
+function createDiamonds() {
+  if (World.frameCount % 320 == 0) {
+       // Modify the positions of diamonds 
+
+    var diamonds = createSprite(Math.round(random(50, 350),40, 10, 10));
+    diamonds.addImage(diamondsImg);
+  diamonds.scale=0.03;
+  diamonds.velocityY = 5;
+  diamonds.lifetime = 200;
+  diamondsG.add(diamonds);
+}
 }
 
-function createRed() {
-redL = createSprite(random(50, 350),40, 10, 10);
-redL.addImage(redImg);
-redL.scale=0.06;
-  redL.velocityY = 3;
-  redL.lifetime = 150;
+function createJwellery() {
+  if (World.frameCount % 410 == 0) {
+    //   Modify the positions of jwellery to make them spawn throughout the available screen size.
+
+    var jwellery = createSprite(Math.round(random(50, 350),40, 10, 10));
+    jwellery.addImage(jwelleryImg);
+  jwellery.scale=0.13;
+  jwellery.velocityY = 5;
+  jwellery.lifetime = 200;
+  jwelleryG.add(jwellery);
+  }
+}
+
+function createSword(){
+  if (World.frameCount % 530 == 0) {
+    //   Modify the positions of sword to make them spawn throughout the available screen size.
+
+    var sword = createSprite(Math.round(random(50, 350),40, 10, 10));
+    sword.addImage(swordImg);
+  sword.scale=0.1;
+  sword.velocityY = 4;
+  sword.lifetime = 200;
+  swordGroup.add(sword);
+  }
 }
