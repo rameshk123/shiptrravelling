@@ -1,52 +1,55 @@
-
 const Engine = Matter.Engine;
 const World = Matter.World;
 const Bodies = Matter.Bodies;
-const Body = Matter.Body;
+const Constraint = Matter.Constraint;
+var engine, world;
+var canvas, angle, tower, ground, cannon;
 
-let engine;
-let world;
-var ball;
-var ground;
-var wedge;
-var angle=60;
-var poly;
-var boxes=[];
+
+
+
+function preload() {
+  backgroundImg = loadImage("./assets/background.gif");
+  towerImage = loadImage("./assets/tower.png");
+
+}
 
 function setup() {
-  createCanvas(400,400);
-
+  canvas = createCanvas(1200,600);
   engine = Engine.create();
   world = engine.world;
-  var option={
-    isStatic:true
-  };
-  ground=Bodies.rectangle(100,300,400,20,option);
-  World.add(world,ground);
-  box1 = new Box(mouseX,mouseY,50,50);
+  angle = -PI / 4;
+  ground = new Ground(0, height - 1, width * 2, 1);
+  tower = new Tower(150, 350, 160, 310);
+  cannon = new Cannon(180, 110, 100, 50, angle);
+//create a object for cannonball
+ cannonBall = new CannonBall(cannon.x,cannon.y)
+}
+
+function draw() {
+  background(189);
+  image(backgroundImg, 0, 0, width, height);
+
   
 
-  rectMode(CENTER);
-  ellipseMode(RADIUS);
-}
-function mousePressed(){
-  boxes.push(
-    
-    
-    new Box(mouseX,mouseY,50,50)
-    
-    
-    )
-}
-
-function draw() 
-{
-  background(51);
-  rect(ground.position.x,ground.position.y,400,10);
   Engine.update(engine);
- for(var i=0;i<boxes.length;i++) {
- boxes[i].show();}
+  ground.display();
   
-  
+
+  cannon.display();
+  tower.display();
+//display the cannonball
+cannonBall.display(); 
 }
 
+
+
+
+
+
+function keyReleased() {
+ //use  keydown to call the shoot function
+ if(keyCode===DOWN_ARROW){
+  cannonBall.shoot();
+ }
+}
